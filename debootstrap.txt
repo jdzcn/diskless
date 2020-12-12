@@ -1,0 +1,54 @@
+sudo -i
+fdisk -l
+mkfs.ext4 /dev/sda1
+mount /dev/sda1 /mnt
+
+/etc/apt/sources.list
+# 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释
+deb https://mirrors.tuna.tsinghua.edu.cn/debian/ buster main contrib non-free
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ buster main contrib non-free
+deb https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main contrib non-free
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main contrib non-free
+deb https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-backports main contrib non-free
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-backports main contrib non-free
+deb https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free
+
+apt update
+
+apt install debootstrap
+
+debootstrap buster /mnt http://mirrors.tuna.tsinghua.edu.cn/debian
+
+echo 'client' >/mnt/etc/hostname
+cp /etc/apt/sources.list /mnt/etc/apt
+cat /etc/network/interfaces > /mnt/etc/network/interfaces
+
+blkid > /mnt/etc/fstab
+UUID=*** / ext4 defaults 0 1
+
+cd /mnt
+mount -t sysfs none sys
+mount -t proc none proc
+mount -t devtmpfs none dev
+mount -t devpts none dev/pts
+chroot /mnt
+
+passwd
+
+/etc/apt/sources.list
+deb http://mirrors.ustc.edu.cn/debian stable main contrib non-free
+# deb-src http://mirrors.ustc.edu.cn/debian stable main contrib non-free
+deb http://mirrors.ustc.edu.cn/debian stable-updates main contrib non-free
+
+apt update
+apt install linux-image-amd64
+apt grub2
+grub-install /dev/sda
+update-grub
+
+useradd -m -g users sb
+passwd sb
+apt install sudo
+nano /etc/sudoers
+sb	ALL=(ALL)NOPASSWD:ALL
