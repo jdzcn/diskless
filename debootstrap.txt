@@ -52,3 +52,4 @@ passwd sb
 apt install sudo
 nano /etc/sudoers
 sb	ALL=(ALL)NOPASSWD:ALL
+# apt install firmware-linux firmware-linux-nonfree libdrm-amdgpu1 xserver-xorg-video-amdgpu
